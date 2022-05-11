@@ -61,7 +61,7 @@ const load_mailbox = async (mailbox) => {
         }
 
         mail.addEventListener("click", async () => {
-          view_email(email.id);
+          view_email(email.id, mailbox);
 
           await fetch(`/emails/${email.id}`, {
             method: "PUT",
@@ -83,8 +83,7 @@ const load_mailbox = async (mailbox) => {
     });
 };
 
-const view_email = async (email_id) => {
-
+const view_email = async (email_id, mailbox) => {
   const email_view = document.querySelector("#email-view");
   email_view.innerHTML = "";
 
@@ -94,7 +93,7 @@ const view_email = async (email_id) => {
   const body = document.createElement("p");
   const timestamp = document.createElement("div");
 
-  const archive_button = document.createElement('button');
+  const archive_button = document.createElement("button");
 
   document.querySelector("#emails-view").style.display = "none";
   document.querySelector("#compose-view").style.display = "none";
@@ -113,7 +112,33 @@ const view_email = async (email_id) => {
 
       email_view.append(sender, recipients, subject, body, timestamp);
 
-      
+      if (mailbox !== "sent") {
+        email_view.append(archive_button);
+      }
+      if (email.archived === false) {
+        archive_button.innerHTML = "Archive";
+      } else if (email.archived === true) {
+        archive_button.innerHTML = "Unarchive";
+      }
+
+      archive_button.addEventListener("click", async () => {
+        if (email.archived === false) {
+          await fetch(`/emails/${email_id}`, {
+            method: "PUT",
+            body: JSON.stringify({
+              archived: true,
+            }),
+          });
+        } else {
+          await fetch(`/emails/${email_id}`, {
+            method: "PUT",
+            body: JSON.stringify({
+              archived: false,
+            }),
+          });
+        }
+        load_mailbox("inbox");
+      });
     });
 };
 
