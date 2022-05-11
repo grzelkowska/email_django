@@ -75,8 +75,9 @@ const load_mailbox = async (mailbox) => {
         } else {
           mail.style.background = "white";
         }
-
+        const br =  document.createElement('br')
         document.querySelector("#emails-view").appendChild(mail);
+        document.querySelector("#emails-view").appendChild(br);
       });
     });
 };
@@ -89,7 +90,7 @@ const view_email = async (email_id, mailbox) => {
   const recipients = document.createElement("div");
   const subject = document.createElement("div");
   const body = document.createElement("p");
-  body.style = 'white-space: pre-line'
+  body.style = "white-space: pre-line";
   const timestamp = document.createElement("div");
 
   const archive_button = document.createElement("button");
@@ -105,7 +106,6 @@ const view_email = async (email_id, mailbox) => {
   })
     .then((response) => response.json())
     .then((email) => {
-      
       sender.innerHTML = `Sender: ${email.sender}`;
       recipients.innerHTML = `Recipients: ${email.recipients}`;
       subject.innerHTML = `Subject: ${email.subject}<hr>`;
@@ -157,9 +157,7 @@ const view_email = async (email_id, mailbox) => {
             "#compose-subject"
           ).value = `Re: ${email.subject}`;
         } else {
-          document.querySelector(
-            "#compose-subject"
-          ).value = `${email.subject}`;
+          document.querySelector("#compose-subject").value = `${email.subject}`;
         }
         document.querySelector(
           "#compose-body"
