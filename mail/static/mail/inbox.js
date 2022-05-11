@@ -75,9 +75,10 @@ const load_mailbox = async (mailbox) => {
         } else {
           mail.style.background = "white";
         }
-        const br =  document.createElement('br')
+        // const br =  document.createElement('hr')
+        mail.style.border = "solid grey"
         document.querySelector("#emails-view").appendChild(mail);
-        document.querySelector("#emails-view").appendChild(br);
+        // document.querySelector("#emails-view").appendChild(br);
       });
     });
 };
