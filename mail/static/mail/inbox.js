@@ -69,8 +69,6 @@ const load_mailbox = async (mailbox) => {
               read: true,
             }),
           });
-
-          mail.style.background = "lightgrey";
         });
         if (email.read === true) {
           mail.style.background = "lightgrey";
@@ -91,9 +89,12 @@ const view_email = async (email_id, mailbox) => {
   const recipients = document.createElement("div");
   const subject = document.createElement("div");
   const body = document.createElement("p");
+  body.style = 'white-space: pre-line'
   const timestamp = document.createElement("div");
 
   const archive_button = document.createElement("button");
+  const reply_button = document.createElement("button");
+  reply_button.innerHTML = "Reply";
 
   document.querySelector("#emails-view").style.display = "none";
   document.querySelector("#compose-view").style.display = "none";
@@ -104,13 +105,21 @@ const view_email = async (email_id, mailbox) => {
   })
     .then((response) => response.json())
     .then((email) => {
+      
       sender.innerHTML = `Sender: ${email.sender}`;
       recipients.innerHTML = `Recipients: ${email.recipients}`;
       subject.innerHTML = `Subject: ${email.subject}<hr>`;
       body.innerHTML = `${email.body}`;
       timestamp.innerHTML = `${email.timestamp}`;
 
-      email_view.append(sender, recipients, subject, body, timestamp);
+      email_view.append(
+        sender,
+        recipients,
+        subject,
+        body,
+        timestamp,
+        reply_button
+      );
 
       if (mailbox !== "sent") {
         email_view.append(archive_button);
@@ -139,6 +148,23 @@ const view_email = async (email_id, mailbox) => {
         }
         load_mailbox("inbox");
       });
+
+      reply_button.addEventListener("click", () => {
+        compose_email();
+        document.querySelector("#compose-recipients").value = `${email.sender}`;
+        if (!email.subject.startsWith("Re:")) {
+          document.querySelector(
+            "#compose-subject"
+          ).value = `Re: ${email.subject}`;
+        } else {
+          document.querySelector(
+            "#compose-subject"
+          ).value = `${email.subject}`;
+        }
+        document.querySelector(
+          "#compose-body"
+        ).value = `\n\n\nOn ${email.timestamp} ${email.sender} wrote: ${email.body}\n\n`;
+      });
     });
 };
 
@@ -152,7 +178,7 @@ const send_email = async (event) => {
   await fetch("/emails", {
     method: "POST",
     body: JSON.stringify({
-      recipients: recipients,
+      recipients,
       subject,
       body,
     }),
